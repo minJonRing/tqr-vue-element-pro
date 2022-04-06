@@ -1,37 +1,31 @@
 <template>
-  <div :class="['element-form-pro select-pro', option.boxClass]">
+  <div :class="['element-form-pro switch-pro', option.boxClass]">
     <slot v-if="option.isRead" name="read" :data="value">
       <div :class="['element-read-pro read-pro', option.readClass]">
-        {{ returnValue(value) || option.placeholder }}
+        {{ value ? "是" : "否" }}
       </div>
     </slot>
-    <el-select
+    <el-switch
       v-else
       v-model="value"
+      :active-text="activeConfig.label || '是'"
+      :inactive-text="inactiveConfig.label || '否'"
+      :active-value="activeConfig.value || true"
+      :inactive-value="inactiveConfig.value || false"
       v-bind="bind"
       @change="
         (val) => {
           option.change && option.change(val);
         }
       "
-    >
-      <el-option
-        v-for="item in listData"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
-      >
-      </el-option>
-    </el-select>
+    />
   </div>
 </template>
 <script>
-import { arrToJson } from "../../../utils/index";
 import { rulesT } from "tqr";
 export default {
-  name: "SelectPro",
+  name: "SwitchPro",
   props: {
-    // 赋值的值
     model: rulesT.Any,
     // 其他绑定属性
     option: rulesT.Object,
@@ -51,36 +45,27 @@ export default {
         this.$emit("change", data);
       },
     },
+    activeConfig() {
+      const { list, listName } = this.option;
+      return list ? list[0] : listName ? this.list[listName][0] : {};
+    },
+    inactiveConfig() {
+      const { list, listName } = this.option;
+      return list ? list[1] : listName ? this.list[listName][1] : {};
+    },
     bind() {
       return {
-        clearable: true,
-        "collapse-tags": true,
-        filterable: true,
-        placeholder: "请选择",
         ...this.option,
         style: { width: "100%", ...this.option.style },
       };
     },
-    listData() {
-      const { list, listName } = this.option;
-      return listName ? this.list[listName] : list || [];
-    },
-    listJson() {
-      const { listName, list } = this.option;
-      const _list = listName ? this.list[listName] : list;
-      return arrToJson(_list);
-    },
-  },
-  methods: {
-    returnValue(value) {
-      return this.listJson[value];
-    },
   },
 };
 </script>
+
 <style lang="scss" scoped>
 @import "../../../style/index.scss";
-.select-pro {
+.switch-pro {
   width: 100%;
 }
 </style>

@@ -1,41 +1,38 @@
+
 <template>
-  <div :class="['element-form-pro select-pro', option.boxClass]">
+  <div :class="['element-form-pro check-pro', option.boxClass]">
     <slot v-if="option.isRead" name="read" :data="value">
       <div :class="['element-read-pro read-pro', option.readClass]">
-        {{ returnValue(value) || option.placeholder }}
+        {{ returnValue(value) }}
       </div>
     </slot>
-    <el-select
-      v-else
-      v-model="value"
-      v-bind="bind"
-      @change="
-        (val) => {
-          option.change && option.change(val);
-        }
-      "
-    >
-      <el-option
-        v-for="item in listData"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
+    <template v-else>
+      <el-checkbox-group
+        v-model="value"
+        @change="
+          (val) => {
+            option.change && option.change(val);
+          }
+        "
       >
-      </el-option>
-    </el-select>
+        <el-checkbox v-for="(i, j) in listData" :key="j" :label="i.value">
+          <slot name="label" :data="i">{{ i.label }}</slot>
+        </el-checkbox>
+      </el-checkbox-group>
+    </template>
   </div>
 </template>
 <script>
 import { arrToJson } from "../../../utils/index";
 import { rulesT } from "tqr";
 export default {
-  name: "SelectPro",
+  name: "CheckPro",
   props: {
     // 赋值的值
     model: rulesT.Any,
     // 其他绑定属性
     option: rulesT.Object,
-    // 字典
+    // 配置选项
     list: rulesT.Object,
   },
   model: {
@@ -53,9 +50,6 @@ export default {
     },
     bind() {
       return {
-        clearable: true,
-        "collapse-tags": true,
-        filterable: true,
         placeholder: "请选择",
         ...this.option,
         style: { width: "100%", ...this.option.style },
@@ -73,14 +67,19 @@ export default {
   },
   methods: {
     returnValue(value) {
-      return this.listJson[value];
+      if (this.option.multiple) {
+        return value.map((i) => this.listJson[i]).join("，");
+      } else {
+        return this.listJson[value];
+      }
     },
   },
 };
 </script>
+
 <style lang="scss" scoped>
 @import "../../../style/index.scss";
-.select-pro {
+.date-pro {
   width: 100%;
 }
 </style>

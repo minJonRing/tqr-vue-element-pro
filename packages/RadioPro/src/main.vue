@@ -1,37 +1,32 @@
 <template>
-  <div :class="['element-form-pro select-pro', option.boxClass]">
+  <div :class="['element-form-pro radio-pro', option.boxClass]">
     <slot v-if="option.isRead" name="read" :data="value">
       <div :class="['element-read-pro read-pro', option.readClass]">
         {{ returnValue(value) || option.placeholder }}
       </div>
     </slot>
-    <el-select
-      v-else
-      v-model="value"
-      v-bind="bind"
-      @change="
-        (val) => {
-          option.change && option.change(val);
-        }
-      "
-    >
-      <el-option
-        v-for="item in listData"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
+    <template v-else>
+      <el-radio-group
+        v-model="value"
+        @change="
+          (val) => {
+            option.change && option.change(val);
+          }
+        "
       >
-      </el-option>
-    </el-select>
+        <el-radio v-for="i in listData" :key="i.value" :label="i.value">
+          {{ i.label }}
+        </el-radio>
+      </el-radio-group>
+    </template>
   </div>
 </template>
 <script>
 import { arrToJson } from "../../../utils/index";
 import { rulesT } from "tqr";
 export default {
-  name: "SelectPro",
+  name: "RadioPro",
   props: {
-    // 赋值的值
     model: rulesT.Any,
     // 其他绑定属性
     option: rulesT.Object,
@@ -53,9 +48,6 @@ export default {
     },
     bind() {
       return {
-        clearable: true,
-        "collapse-tags": true,
-        filterable: true,
         placeholder: "请选择",
         ...this.option,
         style: { width: "100%", ...this.option.style },
@@ -73,14 +65,19 @@ export default {
   },
   methods: {
     returnValue(value) {
-      return this.listJson[value];
+      if (this.option.multiple) {
+        return value.map((i) => this.listJson[i]).join("，");
+      } else {
+        return this.listJson[value];
+      }
     },
   },
 };
 </script>
+
 <style lang="scss" scoped>
 @import "../../../style/index.scss";
-.select-pro {
+.radio-pro {
   width: 100%;
 }
 </style>
