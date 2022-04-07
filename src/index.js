@@ -6,6 +6,9 @@ import DatePro from "../packages/DatePro/src/main.vue";
 import RadioPro from "../packages/RadioPro/src/main.vue";
 import SwitchPro from "../packages/SwitchPro/src/main.vue";
 import TimeSlotPro from "../packages/TimeSlotPro/src/main.vue";
+import FormPro from "../packages/FormPro/src/main.vue";
+import ListPro from "../packages/ListPro/src/main.vue";
+import StaticListPro from "../packages/StaticListPro/src/main.vue";
 
 const components = [
   InputPro,
@@ -16,6 +19,9 @@ const components = [
   RadioPro,
   SwitchPro,
   TimeSlotPro,
+  FormPro,
+  ListPro,
+  StaticListPro
 ]
 const install = function (Vue, opts = {}) {
   components.forEach(component => {
@@ -40,4 +46,7 @@ export default {
   RadioPro,
   SwitchPro,
   TimeSlotPro,
+  FormPro,
+  ListPro,
+  StaticListPro
 }

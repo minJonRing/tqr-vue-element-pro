@@ -9,6 +9,11 @@
     <SwitchPro v-model="form[option[6].prop]" :option="option[6]" />
     <TimeSlotPro :form="form" :option="option[7]" @change="handleChange" />
     <div @click="a">123</div>
+    <ListPro
+      :mixinConfig="{ url: '' }"
+      :searchParam="searchParam"
+      :tableParam="tableParam"
+    />
   </div>
 </template>
 
@@ -21,6 +26,7 @@ import DatePro from "../packages/DatePro/src/main.vue";
 import RadioPro from "../packages/RadioPro/src/main.vue";
 import SwitchPro from "../packages/SwitchPro/src/main.vue";
 import TimeSlotPro from "../packages/TimeSlotPro/src/main.vue";
+import ListPro from "../packages/ListPro/src/main.vue";
 export default {
   name: "App",
   components: {
@@ -32,6 +38,7 @@ export default {
     RadioPro,
     SwitchPro,
     TimeSlotPro,
+    ListPro,
   },
   data() {
     return {
@@ -103,6 +110,21 @@ export default {
         {
           prop: ["h", "i"],
           isRead: false,
+        },
+      ],
+      searchParam: [
+        {
+          label: "aa",
+          type: "input",
+          option: {
+            prop: "a",
+          },
+        },
+      ],
+      tableParam: [
+        {
+          label: "aa",
+          prop: "a",
         },
       ],
     };

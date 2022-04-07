@@ -1,13 +1,5 @@
 <template>
   <div class="List">
-    <!-- 导入显示加载进度 -->
-    <div v-show="percentage" class="percentage">
-      <el-progress
-        :text-inside="true"
-        :stroke-width="20"
-        :percentage="percentage"
-      />
-    </div>
     <!-- 查询 -->
     <el-form
       ref="search"
@@ -19,7 +11,7 @@
     >
       <slot name="search">
         <template v-for="({ label, type, width, option }, j) in searchParam">
-          <div v-if="!type" class="w-100" :key="j" />
+          <div v-if="!type" class="w100" :key="j" />
           <el-form-item v-else :label="label" :key="j" :label-width="width">
             <el-input
               v-if="type === 'input'"
@@ -68,7 +60,7 @@
                 }
               "
             />
-            <div v-else-if="type === 'timeSlot'" class="time-box">
+            <div v-else-if="type === 'timeSlot'" class="flex flex-mid time-box">
               <el-date-picker
                 v-model="search[option.prop[0]]"
                 v-bind="vBind('timeSlot', option)"
@@ -174,10 +166,9 @@
       <slot name="moreEdits" />
     </div>
     <el-table
-      v-loading="load"
       ref="table"
-      :class="['table-pro', layoutClass.table]"
       :data="table"
+      :class="['table-pro', layoutClass.table]"
       v-bind="tableConfig"
       @row-dblclick="dblclick"
       row-key="id"
@@ -236,9 +227,9 @@
             <el-popconfirm
               class="ml10"
               v-if="returnBtn('delete', scope)"
-              title="确定删除？"
+              :title="getBtnOption.delete.tip || '确定删除？'"
               placement="top"
-              @confirm="handleDelete(scope.row.id)"
+              @confirm="handleJump('delete', scope.row)"
             >
               <el-button
                 v-bind="getBtnOption.delete"
@@ -274,7 +265,7 @@
     >
       <el-pagination
         :current-page="pages.currentPage"
-        :page-sizes="[10, 20, 50, 100, 200]"
+        :page-sizes="[5, 10, 20, 50, 100, 200]"
         :page-size="pages.pageSize"
         :layout="
           pagesOption.layout || 'total, sizes, prev, pager, next, jumper'
@@ -289,21 +280,21 @@
 </template>
 
 <script>
-import listMixin from "../../../mixin/listMixin";
 import RenderElement from "../../renderElement";
 import { isArray } from "lodash";
-import { rulesT } from "tqr";
+import rulesT from "tqr";
 export default {
-  name: "ListPro",
-  mixins: [listMixin],
+  name: "StaticListPro",
   components: {
     RenderElement,
   },
   props: {
+    // 初始数据
+    initTable: rulesT.Array,
+    // table数据处理
+    tableFilter: Function,
     // 字典对象
     list: rulesT.Object,
-    // 请求接口
-    mixinConfig: rulesT.Object,
     // 查询条件label宽度
     searchWidth: rulesT.String,
     // 默认初始查询条件
@@ -319,26 +310,17 @@ export default {
     // 按钮显示的条件
     conditionBtn: rulesT.Object,
     // 编辑按钮是否跳转
-    jump: {
-      type: Boolean,
-      default: true,
-    },
-    // 请求参数处理函数（data）查询的数据
-    searchFilter: {
-      type: Function,
-    },
-    // 获取的数据处理 (data)接口返回的数据
-    requestFilter: {
-      type: Function,
-    },
+    jump: rulesT.Boolean,
     // 表格样式
     tableOption: rulesT.Object,
     // 分页参数
     pagesOption: rulesT.Object,
     // 选中的数据 回显使用
     selection: rulesT.Array,
-    // 采用自身加载
-    loads: rulesT.Boolean,
+    selectionId: {
+      type: String,
+      default: "id",
+    },
     // 启用双击选择
     double: rulesT.Boolean,
     // 添加，编辑，查看，删除文字
@@ -347,20 +329,26 @@ export default {
     importOption: rulesT.Object,
     exportOption: rulesT.Object,
     templateOption: rulesT.Object,
-    // 缓存时  是否自动加载
-    activate: rulesT.Boolean,
     // 布局class
     layoutClass: rulesT.Object,
   },
   data() {
     return {
       search: {},
+      initSearch: {},
+      table: [],
+      pages: {
+        currentPage: 1,
+        pageSize: 10,
+        pageTotal: 0,
+      },
       multipleSelection: [],
-      // 加载
-      load: false,
-      // 导入加载进度条
-      percentage: 0,
     };
+  },
+  watch: {
+    initTable() {
+      this.query();
+    },
   },
   computed: {
     tableConfig() {
@@ -432,14 +420,42 @@ export default {
       };
     },
   },
-  activated() {
-    this.activate && this.query();
-  },
   mounted() {
     this.init();
     this.query();
   },
   methods: {
+    query() {
+      const param = {
+        search: this.search,
+        initTable: this.initTable,
+      };
+      // 分页
+      const { currentPage, pageSize } = this.pages;
+      const start = (currentPage - 1) * pageSize;
+      const end = currentPage * pageSize;
+      // 获取匹配的数据
+      const { initTable } = this.tableFilter
+        ? this.tableFilter(param)
+        : { initTable: [] };
+      // 获取当前的数据
+      this.table = initTable.slice(start, end);
+      this.pages.pageTotal = initTable.length;
+      this.$nextTick(() => {
+        const btn = this.otherBtns;
+        if (this.multiple || !!btn.length) {
+          this.setSelection();
+        }
+      });
+    },
+
+    handleSearch() {
+      this.pages.currentPage = 1;
+      this.query();
+    },
+    handleReset() {
+      this.search = { ...this.initSearch };
+    },
     vBind(type, option) {
       let bind = {
         clearable: true,
@@ -490,18 +506,12 @@ export default {
       };
     },
     setSelection() {
-      for (let i in this.table) {
-        const el = this.table[i];
-        if (this.selection.includes(el.id)) {
+      for (let el of this.table) {
+        const id = el[this.selectionId];
+        if (this.selection.includes(id)) {
           this.$refs.table.toggleRowSelection(el, true);
         }
       }
-    },
-    returnCascaderProp(i) {
-      return {
-        emitPath: false,
-        ...i,
-      };
     },
     defaultRow() {
       return {
@@ -517,10 +527,10 @@ export default {
       } of searchParam) {
         if (isArray(prop)) {
           for (let i in prop) {
-            search[prop[i]] = initValue || "";
+            search[prop[i]] = initValue;
           }
         } else {
-          search[prop] = initValue || "";
+          search[prop] = initValue;
         }
       }
       this.search = {
@@ -558,6 +568,18 @@ export default {
     },
     handleSelect(data) {
       this.$emit("getData", [data]);
+    },
+    /**
+     * 表格默认分页更改事件
+     */
+    handleCurrentChange(i) {
+      this.pages.currentPage = i;
+      this.query();
+    },
+    handleSizeChange(i) {
+      this.pages.pageSize = i;
+      this.pages.currentPage = 1;
+      this.query();
     },
   },
 };

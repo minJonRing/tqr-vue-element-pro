@@ -1,13 +1,13 @@
-import { func, any } from '@whitekite/vue-types-extra'
+import { rulesT } from 'tqr'
 import { isObject } from 'lodash'
 
 export default {
   name: 'Render',
   functional: true,
   props: {
-    render: func(),
-    param: any(),
-    row: any(),
+    render: rulesT.Function,
+    param: rulesT.Any,
+    row: rulesT.Any,
   },
   render(createElement, context) {
     const { param, row, render } = context.props
