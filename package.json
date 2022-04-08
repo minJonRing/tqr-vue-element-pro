@@ -8,7 +8,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "lib": "vue-cli-service build  --target lib --name tqr-vue-element-pro --dest lib src/main.js"
+    "lib": "vue-cli-service build --report --target lib --dest lib src/main.js"
   },
   "dependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.16.7",
