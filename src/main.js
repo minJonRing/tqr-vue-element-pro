@@ -25,6 +25,12 @@ Vue.use(Popconfirm)
 Vue.use(Pagination)
 
 Vue.prototype.$ELEMENT = { size: 'mini' }
+Vue.prototype.$GLOBAL = { loading: false }
+Vue.prototype.$AJAX = function () {
+  return new Promise((r) => {
+    r()
+  })
+}
 
 Vue.config.productionTip = false
 

@@ -97,7 +97,7 @@
 <script>
 import RenderElement from "../../renderElement";
 import InputPro from "../../InputPro/src/main.vue";
-import SelectPro from "../..main.vue";
+import SelectPro from "../../SelectPro/src/main.vue";
 import CascaderPro from "../../CascaderPro/src/main.vue";
 import CheckPro from "../../CheckPro/src/main.vue";
 import DatePro from "../../DatePro/src/main.vue";
