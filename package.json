@@ -1,6 +1,6 @@
 {
   "name": "tqr-vue-element-pro",
-  "version": "0.1.0",
+  "version": "0.1.6",
   "description": "component",
   "main": "src/index.js",
   "private": false,
@@ -8,27 +8,26 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "lib": "vue-cli-service build --report --target lib --dest lib src/main.js"
+    "lib": "vue-cli-service build --report --target lib --dest lib src/index.js"
   },
   "dependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.16.7",
-    "core-js": "^3.8.3",
-    "element-ui": "^2.15.6",
+    "core-js": "^3.6.5",
+    "vue": "^2.6.11",
     "lodash": "^4.17.21",
-    "node-sass": "^7.0.1",
-    "sass-loader": "^12.6.0",
+    "element-ui": "^2.15.6",
     "tqr": "^1.1.2",
-    "vue": "^2.6.14"
+    "node-sass": "^4.14.1",
+    "sass-loader": "^8.0.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.16",
-    "@babel/eslint-parser": "^7.12.16",
-    "@vue/cli-plugin-babel": "~5.0.0",
-    "@vue/cli-plugin-eslint": "~5.0.0",
-    "@vue/cli-service": "~5.0.0",
-    "eslint": "^7.32.0",
-    "eslint-plugin-vue": "^8.0.3",
-    "vue-template-compiler": "^2.6.14"
+    "@vue/cli-plugin-babel": "~4.5.15",
+    "@vue/cli-plugin-eslint": "~4.5.15",
+    "@vue/cli-service": "~4.5.15",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^6.2.2",
+    "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {
     "root": true,
@@ -40,7 +39,7 @@
       "eslint:recommended"
     ],
     "parserOptions": {
-      "parser": "@babel/eslint-parser"
+      "parser": "babel-eslint"
     },
     "rules": {}
   },
